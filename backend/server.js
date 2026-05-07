@@ -26,14 +26,14 @@ app.use(cors({
 app.use(express.json());
 
 // ── Public routes (no auth) ──────────────────────────────
-app.use('/api/v1/auth', authRouter);
+app.use('/lynra-api/v1/auth', authRouter);
 
 // ── Protected routes (require valid JWT) ─────────────────
-app.use('/api/v1/bookmarks', authMiddleware, bookmarksRouter);
-app.use('/api/v1/collections', authMiddleware, collectionsRouter);
-app.use('/api/v1/tags', authMiddleware, tagsRouter);
-app.use('/api/v1/stats', authMiddleware, statsRouter);
-app.use('/api/v1/import', authMiddleware, importRouter);
+app.use('/lynra-api/v1/bookmarks', authMiddleware, bookmarksRouter);
+app.use('/lynra-api/v1/collections', authMiddleware, collectionsRouter);
+app.use('/lynra-api/v1/tags', authMiddleware, tagsRouter);
+app.use('/lynra-api/v1/stats', authMiddleware, statsRouter);
+app.use('/lynra-api/v1/import', authMiddleware, importRouter);
 
 // ── Serve frontend in production ─────────────────────────
 const frontendDist = path.join(__dirname, '../frontend/dist');

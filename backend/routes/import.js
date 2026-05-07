@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-// POST /api/v1/import/html
+// POST /lynra-api/v1/import/html
 router.post('/html', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -51,7 +51,7 @@ router.post('/html', upload.single('file'), async (req, res) => {
   }
 });
 
-// GET /api/v1/import/export
+// GET /lynra-api/v1/import/export
 // Accepts token via query param for window.open compatibility
 router.get('/export', (req, res) => {
   try {

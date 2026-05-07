@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getDb } = require('../database/db');
 
-// GET /api/v1/tags
+// GET /lynra-api/v1/tags
 router.get('/', (req, res) => {
   try {
     const db = getDb();
@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
   }
 });
 
-// DELETE /api/v1/tags/:id
+// DELETE /lynra-api/v1/tags/:id
 router.delete('/:id', (req, res) => {
   try {
     const db = getDb();

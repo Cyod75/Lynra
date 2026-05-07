@@ -82,7 +82,7 @@ pm2 startup   # sigue las instrucciones para que arranque al reiniciar
 ### 6. Verificar que el backend funciona
 
 ```bash
-curl http://localhost:3001/api/v1/stats
+curl http://localhost:3001/lynra-api/v1/stats
 ```
 
 ### 7. Configurar Nginx
@@ -104,7 +104,7 @@ server {
     index index.html;
 
     # API → proxy al backend Node
-    location /api/ {
+    location /lynra-api/ {
         proxy_pass http://127.0.0.1:3001;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -198,18 +198,18 @@ linra/
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/api/v1/bookmarks` | Listar (con `?q=`, `?collection_id=`, `?tag=`, `?favorites=1`) |
-| POST | `/api/v1/bookmarks` | Crear (scraping automático) |
-| PUT | `/api/v1/bookmarks/:id` | Actualizar |
-| DELETE | `/api/v1/bookmarks/:id` | Eliminar |
-| POST | `/api/v1/bookmarks/:id/visit` | Registrar visita |
-| POST | `/api/v1/bookmarks/scrape` | Obtener metadatos sin guardar |
-| GET | `/api/v1/collections` | Listar colecciones |
-| POST | `/api/v1/collections` | Crear colección |
-| PUT | `/api/v1/collections/:id` | Actualizar |
-| DELETE | `/api/v1/collections/:id` | Eliminar |
-| GET | `/api/v1/tags` | Listar tags con conteo |
-| DELETE | `/api/v1/tags/:id` | Eliminar tag |
-| GET | `/api/v1/stats` | Estadísticas generales |
-| POST | `/api/v1/import/html` | Importar desde HTML de Chrome/Firefox |
-| GET | `/api/v1/import/export` | Exportar todos los bookmarks en JSON |
+| GET | `/lynra-api/v1/bookmarks` | Listar (con `?q=`, `?collection_id=`, `?tag=`, `?favorites=1`) |
+| POST | `/lynra-api/v1/bookmarks` | Crear (scraping automático) |
+| PUT | `/lynra-api/v1/bookmarks/:id` | Actualizar |
+| DELETE | `/lynra-api/v1/bookmarks/:id` | Eliminar |
+| POST | `/lynra-api/v1/bookmarks/:id/visit` | Registrar visita |
+| POST | `/lynra-api/v1/bookmarks/scrape` | Obtener metadatos sin guardar |
+| GET | `/lynra-api/v1/collections` | Listar colecciones |
+| POST | `/lynra-api/v1/collections` | Crear colección |
+| PUT | `/lynra-api/v1/collections/:id` | Actualizar |
+| DELETE | `/lynra-api/v1/collections/:id` | Eliminar |
+| GET | `/lynra-api/v1/tags` | Listar tags con conteo |
+| DELETE | `/lynra-api/v1/tags/:id` | Eliminar tag |
+| GET | `/lynra-api/v1/stats` | Estadísticas generales |
+| POST | `/lynra-api/v1/import/html` | Importar desde HTML de Chrome/Firefox |
+| GET | `/lynra-api/v1/import/export` | Exportar todos los bookmarks en JSON |

@@ -13,7 +13,7 @@ function signToken(user) {
   );
 }
 
-// POST /api/v1/auth/register
+// POST /lynra-api/v1/auth/register
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -47,7 +47,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/v1/auth/login
+// POST /lynra-api/v1/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -78,7 +78,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET /api/v1/auth/me  (protected)
+// GET /lynra-api/v1/auth/me  (protected)
 router.get('/me', authMiddleware, (req, res) => {
   try {
     const db = getDb();

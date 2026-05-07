@@ -35,7 +35,7 @@ function setTagsForBookmark(db, bookmarkId, tagNames, userId) {
   }
 }
 
-// GET /api/v1/bookmarks
+// GET /lynra-api/v1/bookmarks
 router.get('/', (req, res) => {
   try {
     const db = getDb();
@@ -106,7 +106,7 @@ router.get('/', (req, res) => {
   }
 });
 
-// GET /api/v1/bookmarks/:id
+// GET /lynra-api/v1/bookmarks/:id
 router.get('/:id', (req, res) => {
   try {
     const db = getDb();
@@ -129,7 +129,7 @@ router.get('/:id', (req, res) => {
   }
 });
 
-// POST /api/v1/bookmarks
+// POST /lynra-api/v1/bookmarks
 router.post('/', async (req, res) => {
   try {
     const db = getDb();
@@ -178,7 +178,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/v1/bookmarks/:id
+// PUT /lynra-api/v1/bookmarks/:id
 router.put('/:id', (req, res) => {
   try {
     const db = getDb();
@@ -231,7 +231,7 @@ router.put('/:id', (req, res) => {
   }
 });
 
-// DELETE /api/v1/bookmarks/:id
+// DELETE /lynra-api/v1/bookmarks/:id
 router.delete('/:id', (req, res) => {
   try {
     const db = getDb();
@@ -246,7 +246,7 @@ router.delete('/:id', (req, res) => {
   }
 });
 
-// POST /api/v1/bookmarks/:id/visit
+// POST /lynra-api/v1/bookmarks/:id/visit
 router.post('/:id/visit', (req, res) => {
   try {
     const db = getDb();
@@ -264,7 +264,7 @@ router.post('/:id/visit', (req, res) => {
   }
 });
 
-// POST /api/v1/bookmarks/scrape - preview metadata without saving
+// POST /lynra-api/v1/bookmarks/scrape - preview metadata without saving
 router.post('/scrape', async (req, res) => {
   try {
     const { url } = req.body;

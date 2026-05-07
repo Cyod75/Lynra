@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getDb } = require('../database/db');
 
-// GET /api/v1/stats
+// GET /lynra-api/v1/stats
 router.get('/', (req, res) => {
   try {
     const db = getDb();

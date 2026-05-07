@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getDb } = require('../database/db');
 
-// GET /api/v1/collections
+// GET /lynra-api/v1/collections
 router.get('/', (req, res) => {
   try {
     const db = getDb();
@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
   }
 });
 
-// POST /api/v1/collections
+// POST /lynra-api/v1/collections
 router.post('/', (req, res) => {
   try {
     const db = getDb();
@@ -46,7 +46,7 @@ router.post('/', (req, res) => {
   }
 });
 
-// PUT /api/v1/collections/:id
+// PUT /lynra-api/v1/collections/:id
 router.put('/:id', (req, res) => {
   try {
     const db = getDb();
@@ -75,7 +75,7 @@ router.put('/:id', (req, res) => {
   }
 });
 
-// DELETE /api/v1/collections/:id
+// DELETE /lynra-api/v1/collections/:id
 router.delete('/:id', (req, res) => {
   try {
     const db = getDb();

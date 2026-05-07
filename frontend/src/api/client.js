@@ -1,4 +1,4 @@
-const BASE = '/api/v1';
+const BASE = '/lynra-api/v1';
 
 function getToken() {
   return localStorage.getItem('lv_token');
