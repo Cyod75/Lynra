@@ -1,0 +1,51 @@
+# Bases de datos SQLite (Backend)
+backend/database/*
+!backend/database/*.js
+backend/database/*.sqlite*
+backend/database/*.db*
+
+Dockerfile
+.dockerignore
+
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Entorno (Variables secretas)
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Frontend (Vite/React)
+frontend/dist/
+frontend/dist-ssr/
+frontend/node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editores y Sistema Operativo
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

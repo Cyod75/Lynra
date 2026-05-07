@@ -1,0 +1,42 @@
+name: Deploy Lynra
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Ir al directorio del proyecto
+            cd /var/www/html/Lynra || exit
+
+            # Actualizar código
+            git pull origin main
+
+            # Actualizar Backend
+            cd backend
+            npm install --production
+            
+            # Actualizar Frontend
+            cd ../frontend
+            npm install
+            npm run build
+
+            # Reiniciar aplicación en PM2
+            # Se usa el nombre definido en ecosystem.config.js o el nombre del proceso
+            pm2 restart linra || pm2 start ecosystem.config.js --cwd /var/www/html/Lynra/backend
+            pm2 save

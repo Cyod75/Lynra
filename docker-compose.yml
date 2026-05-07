@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build: ./backend
+    container_name: lynra-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - db_data:/app/database   # Persistencia de SQLite
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: lynra-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  db_data:
