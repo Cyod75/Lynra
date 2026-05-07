@@ -21,22 +21,16 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            # Ir al directorio del proyecto
-            cd /var/www/html/Lynra || exit
+            cd /var/www/html/Lynra || exit 1
 
-            # Actualizar código
             git pull origin main
 
-            # Actualizar Backend
             cd backend
             npm install --production
-            
-            # Actualizar Frontend
+
             cd ../frontend
             npm install
             npm run build
 
-            # Reiniciar aplicación en PM2
-            # Se usa el nombre definido en ecosystem.config.js o el nombre del proceso
-            pm2 restart linra || pm2 start ecosystem.config.js --cwd /var/www/html/Lynra/backend
+            pm2 restart lynra-backend
             pm2 save
