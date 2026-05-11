@@ -35,7 +35,7 @@ export default function ImportExport() {
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
       {/* Export */}
-      <div className="card p-6">
+      <div className="card stat-card p-6" style={{ '--card-accent': 'var(--app-accent)' }}>
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: 'color-mix(in srgb, var(--app-accent) 12%, transparent)' }}>
@@ -54,7 +54,7 @@ export default function ImportExport() {
       </div>
 
       {/* Import */}
-      <div className="card p-6">
+      <div className="card stat-card p-6" style={{ '--card-accent': '#ec4899' }}>
         <div className="flex items-start gap-4 mb-5">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: 'color-mix(in srgb, #ec4899 12%, transparent)' }}>
@@ -79,7 +79,7 @@ export default function ImportExport() {
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={() => !uploading && fileRef.current?.click()}
-          className="rounded-xl border-2 border-dashed p-10 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200"
+          className="import-dropzone rounded-xl border-2 border-dashed p-10 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200"
           style={{
             borderColor: dragging ? 'var(--app-accent)' : 'var(--app-border)',
             backgroundColor: dragging ? 'color-mix(in srgb, var(--app-accent) 6%, transparent)'

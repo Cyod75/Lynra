@@ -10,6 +10,8 @@ import Welcome from './pages/Welcome';
 import useStore from './store/useStore';
 import CommandPalette from './components/CommandPalette';
 import Toaster from './components/Toaster';
+import VisualAtmosphere from './components/VisualAtmosphere';
+import ExperienceDock from './components/ExperienceDock';
 
 // ── Spinner ────────────────────────────────────────────
 function Spinner() {
@@ -42,7 +44,17 @@ function MainApp({ onLogout }) {
       case 'stats':  return <Stats />;
       case 'import': return (
         <div>
-          <h1 className="text-xl font-bold mb-6" style={{ color: 'var(--app-text)' }}>Importar / Exportar</h1>
+          <div className="page-hero mb-6">
+            <div className="relative z-[1]">
+              <div className="quick-chip mb-3">Migración visual</div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: 'var(--app-text)' }}>
+                Importar / Exportar
+              </h1>
+              <p className="text-sm mt-2 max-w-2xl" style={{ color: 'var(--app-muted)' }}>
+                Trae tus marcadores a Lynra o guarda una copia de tu biblioteca.
+              </p>
+            </div>
+          </div>
           <ImportExport />
         </div>
       );
@@ -52,7 +64,7 @@ function MainApp({ onLogout }) {
 
   return (
     <div className="app-shell flex h-screen overflow-hidden">
-      <div className="ambient-orbit -top-56 -right-48" />
+      <VisualAtmosphere />
       <Sidebar
         onNavigate={(page) => { setCurrentPage(page); setMobileOpen(false); }}
         currentPage={currentPage}
@@ -62,8 +74,9 @@ function MainApp({ onLogout }) {
       />
       <CommandPalette onNavigate={(page) => { setCurrentPage(page); setMobileOpen(false); }} />
       <Toaster />
+      <ExperienceDock />
 
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="relative z-10 flex-1 flex flex-col overflow-hidden">
         {/* Mobile header bar */}
         <div className="flex items-center gap-3 h-14 px-4 lg:hidden flex-shrink-0"
           style={{ borderBottom: '1px solid var(--app-border)', backgroundColor: 'var(--app-sidebar)' }}>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BookMarked, Plus, Sparkles, Star, Tags, TrendingUp } from 'lucide-react';
+import { BookMarked, Command, Focus, Plus, Sparkles, Star, Tags, TrendingUp, Wand2 } from 'lucide-react';
 import {
   DndContext, closestCenter, PointerSensor, KeyboardSensor,
   useSensor, useSensors, DragOverlay,
@@ -77,6 +77,7 @@ export default function Home() {
     bookmarks, fetchBookmarks, loading,
     viewMode, collections, activeCollection,
     activeTag, searchQuery, showFavoritesOnly,
+    setActiveCollection,
   } = useStore();
 
   const [items, setItems] = useState([]);
@@ -165,6 +166,20 @@ export default function Home() {
             <p className="text-sm mt-2 max-w-2xl" style={{ color: 'var(--app-muted)' }}>
               Guarda, redescubre y organiza tus mejores recursos con una experiencia rápida y visual.
             </p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <button className="hero-action" onClick={() => window.dispatchEvent(new CustomEvent('lynra:open-command'))}>
+                <Command className="w-4 h-4" />
+                Pulsa Control + K para abrir comandos
+              </button>
+              <button className="hero-action" onClick={() => document.body.classList.toggle('lynra-cinema')}>
+                <Focus className="w-4 h-4" />
+                Modo visual
+              </button>
+              <button className="hero-action" onClick={() => window.dispatchEvent(new CustomEvent('lynra:new-bookmark'))}>
+                <Wand2 className="w-4 h-4" />
+                Crear enlace
+              </button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="quick-chip"><BookMarked className="w-3.5 h-3.5" />{items.length} enlaces</span>
@@ -183,6 +198,23 @@ export default function Home() {
           <span className="hidden sm:inline">Añadir</span>
         </button>
       </div>
+
+      {collections.length > 0 && !loading && (
+        <div className="collection-spectrum mb-5">
+          {collections.slice(0, 10).map((collection, index) => (
+            <button
+              key={collection.id}
+              className={`spectrum-item ${activeCollection === collection.id ? 'active' : ''}`}
+              onClick={() => setActiveCollection(collection.id)}
+              style={{ '--collection-color': collection.color || 'var(--app-accent)', '--i': index }}
+            >
+              <span className="spectrum-dot" />
+              <span className="truncate">{collection.name}</span>
+              <strong>{collection.bookmark_count}</strong>
+            </button>
+          ))}
+        </div>
+      )}
 
       {loading && (
         <div className={viewMode === 'list' ? 'flex flex-col gap-2' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'}>

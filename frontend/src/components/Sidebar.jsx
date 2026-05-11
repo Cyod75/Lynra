@@ -76,8 +76,13 @@ export default function Sidebar({ onNavigate, currentPage, onClose, mobileOpen, 
         <div className="flex items-center justify-between px-4 h-16 flex-shrink-0"
           style={{ borderBottom: '1px solid var(--app-sidebar-border)' }}>
           <div className="flex items-center gap-2.5">
-            <img src={lynraLogo} alt="Lynra" className="w-8 h-8 object-contain drop-shadow-md" />
-            <span className="font-bold tracking-tight text-lg" style={{ color: 'var(--app-text)' }}>Lynra</span>
+            <div className="brand-mark">
+              <img src={lynraLogo} alt="Lynra" className="w-8 h-8 object-contain drop-shadow-md" />
+            </div>
+            <div>
+              <span className="font-bold tracking-tight text-lg block leading-none" style={{ color: 'var(--app-text)' }}>Lynra</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--app-faint)' }}>Link vault</span>
+            </div>
           </div>
           <button onClick={onClose} className="btn-ghost p-1.5 lg:hidden">
             <X className="w-4 h-4" />
@@ -192,10 +197,10 @@ export default function Sidebar({ onNavigate, currentPage, onClose, mobileOpen, 
                   style={{ color: 'var(--app-faint)' }}>Tags</span>
               </div>
               <div className="flex flex-wrap gap-1.5 px-1">
-                {tags.slice(0, 18).map((tag) => (
+              {tags.slice(0, 18).map((tag) => (
                   <button key={tag.id}
                     onClick={() => { setActiveTag(tag.name); onNavigate('home'); }}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150"
+                    className="tag-orbit inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-150"
                     style={{
                       backgroundColor: currentPage === 'home' && activeTag === tag.name ? 'var(--app-accent)' : 'var(--app-surface-2)',
                       color: currentPage === 'home' && activeTag === tag.name ? '#fff' : 'var(--app-muted)',

@@ -7,7 +7,7 @@ import { getStats, visitBookmark } from '../api/client';
 
 function StatCard({ icon, label, value, accentColor }) {
   return (
-    <div className="card p-5 flex items-center gap-4">
+    <div className="card stat-card p-5 flex items-center gap-4" style={{ '--card-accent': accentColor }}>
       <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ backgroundColor: `${accentColor}18` }}>
         <span style={{ color: accentColor }}>{icon}</span>
@@ -69,7 +69,7 @@ export default function StatsPanel() {
       </div>
 
       {/* Bar chart */}
-      <div className="card p-6">
+      <div className="card stat-card p-6" style={{ '--card-accent': 'var(--app-accent)' }}>
         <h3 className="text-sm font-semibold mb-6" style={{ color: 'var(--app-text-2)' }}>
           Bookmarks por día — últimos 30 días
         </h3>
@@ -95,7 +95,7 @@ export default function StatsPanel() {
       {/* Top lists */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Top visited */}
-        <div className="card p-5">
+        <div className="card stat-card p-5" style={{ '--card-accent': '#22c55e' }}>
           <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--app-text-2)' }}>
             Top 5 más visitados
           </h3>
@@ -132,7 +132,7 @@ export default function StatsPanel() {
         </div>
 
         {/* Top tags */}
-        <div className="card p-5">
+        <div className="card stat-card p-5" style={{ '--card-accent': '#ec4899' }}>
           <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--app-text-2)' }}>
             Top 5 tags más usados
           </h3>

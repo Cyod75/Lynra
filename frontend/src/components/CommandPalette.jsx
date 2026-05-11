@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  BarChart2, Bookmark, Columns, Grid3X3, List, Plus, Search,
+  BarChart2, Bookmark, Columns, Focus, Grid3X3, List, Plus, Search,
   Sparkles, Star, Upload, X,
 } from 'lucide-react';
 import useStore from '../store/useStore';
@@ -16,6 +16,7 @@ export default function CommandPalette({ onNavigate }) {
   const inputRef = useRef(null);
 
   useEffect(() => {
+    const onOpen = () => setOpen(true);
     const onKeyDown = (e) => {
       const isCommand = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k';
       if (isCommand) {
@@ -24,8 +25,12 @@ export default function CommandPalette({ onNavigate }) {
       }
       if (e.key === 'Escape') setOpen(false);
     };
+    window.addEventListener('lynra:open-command', onOpen);
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('lynra:open-command', onOpen);
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, []);
 
   useEffect(() => {
@@ -49,6 +54,12 @@ export default function CommandPalette({ onNavigate }) {
         hint: 'Filtra tus enlaces al instante',
         icon: Search,
         run: () => document.getElementById('search-input')?.focus(),
+      },
+      {
+        label: 'Modo visual',
+        hint: 'Sube brillo, saturación y ambiente',
+        icon: Focus,
+        run: () => document.body.classList.toggle('lynra-cinema'),
       },
       {
         label: 'Todos los enlaces',

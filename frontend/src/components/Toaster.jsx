@@ -5,6 +5,22 @@ export function toast({ title, message, type = 'info' }) {
   window.dispatchEvent(new CustomEvent('lynra:toast', {
     detail: { title, message, type },
   }));
+
+  if (type === 'success') {
+    const burst = document.createElement('div');
+    burst.className = 'confetti-burst';
+    const colors = ['#3b82f6', '#8b5cf6', '#14b8a6', '#facc15', '#ec4899'];
+    Array.from({ length: 28 }).forEach((_, index) => {
+      const piece = document.createElement('span');
+      piece.style.setProperty('--x', `${Math.cos(index) * (80 + (index % 4) * 18)}px`);
+      piece.style.setProperty('--y', `${Math.sin(index * 1.7) * (62 + (index % 5) * 12)}px`);
+      piece.style.setProperty('--r', `${index * 27}deg`);
+      piece.style.backgroundColor = colors[index % colors.length];
+      burst.appendChild(piece);
+    });
+    document.body.appendChild(burst);
+    setTimeout(() => burst.remove(), 1200);
+  }
 }
 
 const icons = {
