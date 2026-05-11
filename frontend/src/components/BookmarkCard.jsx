@@ -83,8 +83,19 @@ export default function BookmarkCard({ bookmark, onEdit, viewMode, dragListeners
 
   const handleMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty('--mx', `${event.clientX - rect.left}px`);
-    event.currentTarget.style.setProperty('--my', `${event.clientY - rect.top}px`);
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const rx = ((y / rect.height) - 0.5) * -10;
+    const ry = ((x / rect.width) - 0.5) * 10;
+    event.currentTarget.style.setProperty('--mx', `${x}px`);
+    event.currentTarget.style.setProperty('--my', `${y}px`);
+    event.currentTarget.style.setProperty('--rx', `${rx}deg`);
+    event.currentTarget.style.setProperty('--ry', `${ry}deg`);
+  };
+
+  const resetTilt = (event) => {
+    event.currentTarget.style.setProperty('--rx', '0deg');
+    event.currentTarget.style.setProperty('--ry', '0deg');
   };
 
   const actionButtons = (
@@ -109,6 +120,7 @@ export default function BookmarkCard({ bookmark, onEdit, viewMode, dragListeners
     return (
       <div className={`card bookmark-card flex items-center gap-3 px-4 py-3 group ${deleting ? 'opacity-40 pointer-events-none' : ''}`}
         onMouseMove={handleMouseMove}
+        onMouseLeave={resetTilt}
         style={{ '--card-accent': accent, '--i': index, borderRadius: '0.75rem' }}>
         {dragListeners && (
           <button {...dragListeners}
@@ -143,6 +155,7 @@ export default function BookmarkCard({ bookmark, onEdit, viewMode, dragListeners
   return (
     <div className={`card bookmark-card flex flex-col p-4 group min-h-[13rem] ${deleting ? 'opacity-40 pointer-events-none' : ''}`}
       onMouseMove={handleMouseMove}
+      onMouseLeave={resetTilt}
       style={{ '--card-accent': accent, '--i': index }}>
       <div className="relative z-[1] flex items-start gap-3 mb-3">
         <FaviconImg src={bookmark.favicon} title={bookmark.title} />

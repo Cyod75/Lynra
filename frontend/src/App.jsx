@@ -12,6 +12,7 @@ import CommandPalette from './components/CommandPalette';
 import Toaster from './components/Toaster';
 import VisualAtmosphere from './components/VisualAtmosphere';
 import ExperienceDock from './components/ExperienceDock';
+import InterstellarField from './components/InterstellarField';
 
 // ── Spinner ────────────────────────────────────────────
 function Spinner() {
@@ -64,6 +65,7 @@ function MainApp({ onLogout }) {
 
   return (
     <div className="app-shell flex h-screen overflow-hidden">
+      <InterstellarField />
       <VisualAtmosphere />
       <Sidebar
         onNavigate={(page) => { setCurrentPage(page); setMobileOpen(false); }}
