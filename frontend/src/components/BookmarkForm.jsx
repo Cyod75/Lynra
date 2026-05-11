@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Loader2, Globe, Tag, Plus, Check } from 'lucide-react';
 import useStore from '../store/useStore';
 import { scrapeUrl } from '../api/client';
+import { toast } from './Toaster';
 
 export default function BookmarkForm({ onClose, editData }) {
   const { addBookmark, editBookmark, fetchBookmarks, fetchTags, collections, tags: allTags } = useStore();
@@ -28,7 +29,9 @@ export default function BookmarkForm({ onClose, editData }) {
       if (meta.title) setTitle(meta.title);
       if (meta.description) setDescription(meta.description);
       if (meta.favicon) { setFavicon(meta.favicon); setFaviconErr(false); }
-    } catch (err) { alert('No se pudieron obtener los metadatos: ' + err.message); }
+    } catch (err) {
+      toast({ title: 'No se pudieron obtener metadatos', message: err.message, type: 'error' });
+    }
     finally { setScraping(false); }
   };
 
@@ -68,8 +71,15 @@ export default function BookmarkForm({ onClose, editData }) {
       if (isEdit) await editBookmark(editData.id, payload);
       else await addBookmark(payload);
       await Promise.all([fetchBookmarks(), fetchTags()]);
+      toast({
+        title: isEdit ? 'Enlace actualizado' : 'Enlace guardado',
+        message: payload.title,
+        type: 'success',
+      });
       onClose();
-    } catch (err) { alert(err.message); }
+    } catch (err) {
+      toast({ title: 'No se pudo guardar', message: err.message, type: 'error' });
+    }
     finally { setSaving(false); }
   };
 

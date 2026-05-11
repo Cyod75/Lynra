@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
+import { Command, Search, X } from 'lucide-react';
 import useStore from '../store/useStore';
 
 export default function SearchBar() {
@@ -22,7 +22,7 @@ export default function SearchBar() {
   useEffect(() => () => clearTimeout(debounceRef.current), []);
 
   return (
-    <div className="relative flex-1 max-w-xl">
+    <div className="relative flex-1 max-w-xl group">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
         style={{ color: 'var(--app-faint)' }} />
       <input
@@ -30,16 +30,20 @@ export default function SearchBar() {
         type="text"
         value={searchQuery}
         onChange={handleChange}
-        placeholder="Buscar enlaces…"
-        className="input-base pl-9 pr-9 text-sm"
+        placeholder="Buscar enlaces..."
+        className="input-base pl-9 pr-20 text-sm"
       />
       {searchQuery && (
         <button onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+          className="absolute right-14 top-1/2 -translate-y-1/2 transition-colors"
           style={{ color: 'var(--app-faint)' }}>
           <X className="w-4 h-4" />
         </button>
       )}
+      <span className="hidden sm:inline-flex absolute right-2 top-1/2 -translate-y-1/2 items-center gap-1 px-1.5 py-1 rounded-md text-[11px]"
+        style={{ color: 'var(--app-faint)', backgroundColor: 'var(--app-surface-2)', border: '1px solid var(--app-border)' }}>
+        <Command className="w-3 h-3" />K
+      </span>
     </div>
   );
 }

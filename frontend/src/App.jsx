@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Welcome from './pages/Welcome';
 import useStore from './store/useStore';
+import CommandPalette from './components/CommandPalette';
+import Toaster from './components/Toaster';
 
 // ── Spinner ────────────────────────────────────────────
 function Spinner() {
@@ -49,7 +51,8 @@ function MainApp({ onLogout }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="app-shell flex h-screen overflow-hidden">
+      <div className="ambient-orbit -top-56 -right-48" />
       <Sidebar
         onNavigate={(page) => { setCurrentPage(page); setMobileOpen(false); }}
         currentPage={currentPage}
@@ -57,6 +60,8 @@ function MainApp({ onLogout }) {
         mobileOpen={mobileOpen}
         onLogout={onLogout}
       />
+      <CommandPalette onNavigate={(page) => { setCurrentPage(page); setMobileOpen(false); }} />
+      <Toaster />
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header bar */}
@@ -71,7 +76,7 @@ function MainApp({ onLogout }) {
           <span className="font-bold tracking-tight" style={{ color: 'var(--app-text)' }}>Lynra</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 relative">
           <div className="max-w-7xl mx-auto">
             {renderPage()}
           </div>

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Plus, BookMarked, Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { BookMarked, Plus, Sparkles, Star, Tags, TrendingUp } from 'lucide-react';
 import {
   DndContext, closestCenter, PointerSensor, KeyboardSensor,
   useSensor, useSensors, DragOverlay,
@@ -16,8 +16,7 @@ import BookmarkForm from '../components/BookmarkForm';
 import ViewToggle from '../components/ViewToggle';
 import SearchBar from '../components/SearchBar';
 
-// ── Sortable wrapper for each card ───────────────────────
-function SortableCard({ bookmark, onEdit, viewMode }) {
+function SortableCard({ bookmark, onEdit, viewMode, index }) {
   const {
     attributes, listeners, setNodeRef,
     transform, transition, isDragging,
@@ -25,19 +24,54 @@ function SortableCard({ bookmark, onEdit, viewMode }) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: transition || 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
+    transition: transition || 'transform 220ms cubic-bezier(0.25, 1, 0.5, 1)',
     zIndex: isDragging ? 999 : undefined,
     opacity: isDragging ? 0.45 : 1,
+    '--i': index,
   };
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-      <BookmarkCard bookmark={bookmark} onEdit={onEdit} viewMode={viewMode} dragListeners={listeners} />
+      <BookmarkCard bookmark={bookmark} onEdit={onEdit} viewMode={viewMode} dragListeners={listeners} index={index} />
     </div>
   );
 }
 
-// ── Home page ────────────────────────────────────────────
+function BookmarkSkeleton({ viewMode = 'grid' }) {
+  if (viewMode === 'list') {
+    return (
+      <div className="card px-4 py-3 flex items-center gap-3">
+        <div className="skeleton w-8 h-8 rounded-lg" />
+        <div className="flex-1 space-y-2">
+          <div className="skeleton h-3 w-1/2 rounded" />
+          <div className="skeleton h-2.5 w-3/4 rounded" />
+        </div>
+        <div className="skeleton h-7 w-20 rounded-lg" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="card p-4 space-y-4">
+      <div className="flex gap-3">
+        <div className="skeleton w-9 h-9 rounded-xl" />
+        <div className="flex-1 space-y-2">
+          <div className="skeleton h-3.5 w-4/5 rounded" />
+          <div className="skeleton h-2.5 w-1/2 rounded" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="skeleton h-2.5 w-full rounded" />
+        <div className="skeleton h-2.5 w-2/3 rounded" />
+      </div>
+      <div className="flex gap-2">
+        <div className="skeleton h-6 w-16 rounded-md" />
+        <div className="skeleton h-6 w-20 rounded-md" />
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const {
     bookmarks, fetchBookmarks, loading,
@@ -45,22 +79,26 @@ export default function Home() {
     activeTag, searchQuery, showFavoritesOnly,
   } = useStore();
 
-  const [items,     setItems]     = useState([]);
-  const [showForm,  setShowForm]  = useState(false);
-  const [editData,  setEditData]  = useState(null);
-  const [activeId,  setActiveId]  = useState(null); // for DragOverlay
+  const [items, setItems] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [activeId, setActiveId] = useState(null);
 
-  // Sync store → local items
   useEffect(() => { setItems(bookmarks); }, [bookmarks]);
 
   useEffect(() => {
     fetchBookmarks();
   }, [activeCollection, activeTag, searchQuery, showFavoritesOnly]);
 
-  const openEdit  = (b) => { setEditData(b); setShowForm(true); };
-  const closeForm = () =>  { setShowForm(false); setEditData(null); };
+  useEffect(() => {
+    const openNewBookmark = () => { setEditData(null); setShowForm(true); };
+    window.addEventListener('lynra:new-bookmark', openNewBookmark);
+    return () => window.removeEventListener('lynra:new-bookmark', openNewBookmark);
+  }, []);
 
-  // DnD sensors — pointer + keyboard accessible
+  const openEdit = (b) => { setEditData(b); setShowForm(true); };
+  const closeForm = () => { setShowForm(false); setEditData(null); };
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -79,10 +117,8 @@ export default function Home() {
   };
 
   const handleDragCancel = () => setActiveId(null);
-
   const isEmpty = !loading && items.length === 0;
 
-  // ── Kanban grouping ──────────────────────────────────
   const kanbanGroups = () => {
     const map = {};
     const uncol = [];
@@ -90,14 +126,15 @@ export default function Home() {
       if (b.collection_id) {
         if (!map[b.collection_id]) map[b.collection_id] = [];
         map[b.collection_id].push(b);
-      } else { uncol.push(b); }
+      } else {
+        uncol.push(b);
+      }
     });
     const cols = collections.filter((c) => map[c.id]).map((c) => ({ ...c, items: map[c.id] }));
     if (uncol.length) cols.push({ id: null, name: 'Sin colección', color: '#70708a', items: uncol });
     return cols;
   };
 
-  // Page title
   const pageTitle = showFavoritesOnly ? 'Favoritos'
     : activeTag ? `#${activeTag}`
     : activeCollection ? (collections.find((c) => c.id === activeCollection)?.name || 'Colección')
@@ -106,10 +143,39 @@ export default function Home() {
 
   const activeBookmark = activeId ? items.find((b) => b.id === activeId) : null;
 
+  const insights = useMemo(() => {
+    const favoriteCount = items.filter((b) => b.is_favorite).length;
+    const tagCount = new Set(items.flatMap((b) => b.tags?.map((t) => t.name) || [])).size;
+    const totalVisits = items.reduce((sum, b) => sum + Number(b.visits || 0), 0);
+    return { favoriteCount, tagCount, totalVisits };
+  }, [items]);
+
   return (
     <div className="flex flex-col h-full">
-      {/* ── Toolbar ─────────────────────────────── */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
+      <div className="page-hero mb-5 animate-fade-in">
+        <div className="flex flex-col lg:flex-row lg:items-end gap-4 justify-between relative z-[1]">
+          <div>
+            <div className="quick-chip mb-3">
+              <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--app-accent)' }} />
+              Biblioteca inteligente
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: 'var(--app-text)' }}>
+              {pageTitle}
+            </h1>
+            <p className="text-sm mt-2 max-w-2xl" style={{ color: 'var(--app-muted)' }}>
+              Guarda, redescubre y organiza tus mejores recursos con una experiencia rápida y visual.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="quick-chip"><BookMarked className="w-3.5 h-3.5" />{items.length} enlaces</span>
+            <span className="quick-chip"><Star className="w-3.5 h-3.5" />{insights.favoriteCount} favoritos</span>
+            <span className="quick-chip"><Tags className="w-3.5 h-3.5" />{insights.tagCount} tags</span>
+            <span className="quick-chip"><TrendingUp className="w-3.5 h-3.5" />{insights.totalVisits} visitas</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="surface-panel sticky top-0 z-20 rounded-xl p-3 mb-5 flex items-center gap-3 flex-wrap">
         <SearchBar />
         <ViewToggle />
         <button id="add-bookmark-btn" onClick={() => { setEditData(null); setShowForm(true); }} className="btn-primary flex-shrink-0">
@@ -118,38 +184,28 @@ export default function Home() {
         </button>
       </div>
 
-      {/* ── Heading ─────────────────────────────── */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>{pageTitle}</h1>
-        {!loading && (
-          <span className="text-xs" style={{ color: 'var(--app-faint)' }}>
-            {items.length} {items.length === 1 ? 'enlace' : 'enlaces'}
-          </span>
-        )}
-      </div>
-
-      {/* ── Loading ─────────────────────────────── */}
       {loading && (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--app-accent)' }} />
+        <div className={viewMode === 'list' ? 'flex flex-col gap-2' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'}>
+          {Array.from({ length: viewMode === 'list' ? 6 : 8 }).map((_, i) => (
+            <BookmarkSkeleton key={i} viewMode={viewMode} />
+          ))}
         </div>
       )}
 
-      {/* ── Empty state ──────────────────────────── */}
       {isEmpty && (
-        <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
-            style={{ backgroundColor: 'var(--app-surface-2)', border: '1px solid var(--app-border)' }}>
-            <BookMarked className="w-7 h-7" style={{ color: 'var(--app-faint)' }} />
+        <div className="page-hero flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center animate-pulse-dot"
+            style={{ background: 'var(--app-accent-gradient)', boxShadow: '0 18px 50px var(--app-glow)' }}>
+            <BookMarked className="w-9 h-9 text-white" />
           </div>
           <div>
-            <p className="font-semibold" style={{ color: 'var(--app-text-2)' }}>
-              {searchQuery || activeTag ? 'Sin resultados' : 'No hay bookmarks aún'}
+            <p className="font-bold text-lg" style={{ color: 'var(--app-text)' }}>
+              {searchQuery || activeTag ? 'Sin resultados' : 'Tu biblioteca está lista'}
             </p>
             <p className="text-sm mt-1" style={{ color: 'var(--app-faint)' }}>
               {searchQuery || activeTag
-                ? 'Prueba con otros términos'
-                : 'Pulsa "Añadir" para guardar tu primer enlace'}
+                ? 'Prueba con otros términos o cambia de filtro.'
+                : 'Añade el primer enlace y Lynra empezará a tomar forma.'}
             </p>
           </div>
           {!searchQuery && !activeTag && (
@@ -160,18 +216,16 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Grid view with DnD ──────────────────── */}
       {!loading && !isEmpty && viewMode === 'grid' && (
         <DndContext sensors={sensors} collisionDetection={closestCenter}
           onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel}>
           <SortableContext items={items.map((b) => b.id)} strategy={rectSortingStrategy}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {items.map((b) => (
-                <SortableCard key={b.id} bookmark={b} onEdit={openEdit} viewMode="grid" />
+              {items.map((b, index) => (
+                <SortableCard key={b.id} bookmark={b} onEdit={openEdit} viewMode="grid" index={index} />
               ))}
             </div>
           </SortableContext>
-          {/* Ghost card while dragging */}
           <DragOverlay adjustScale={false}>
             {activeBookmark && (
               <div style={{ transform: 'rotate(2deg) scale(1.02)', pointerEvents: 'none', opacity: 0.9 }}>
@@ -182,14 +236,13 @@ export default function Home() {
         </DndContext>
       )}
 
-      {/* ── List view with DnD ──────────────────── */}
       {!loading && !isEmpty && viewMode === 'list' && (
         <DndContext sensors={sensors} collisionDetection={closestCenter}
           onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel}>
           <SortableContext items={items.map((b) => b.id)} strategy={rectSortingStrategy}>
             <div className="flex flex-col gap-2">
-              {items.map((b) => (
-                <SortableCard key={b.id} bookmark={b} onEdit={openEdit} viewMode="list" />
+              {items.map((b, index) => (
+                <SortableCard key={b.id} bookmark={b} onEdit={openEdit} viewMode="list" index={index} />
               ))}
             </div>
           </SortableContext>
@@ -203,12 +256,11 @@ export default function Home() {
         </DndContext>
       )}
 
-      {/* ── Kanban view ──────────────────────────── */}
       {!loading && !isEmpty && viewMode === 'kanban' && (
         <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: '200px' }}>
           {kanbanGroups().map((col) => (
             <div key={col.id ?? 'none'} className="flex-shrink-0 w-72">
-              <div className="flex items-center gap-2 mb-3 px-1">
+              <div className="surface-panel flex items-center gap-2 mb-3 px-3 py-2 rounded-xl">
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: col.color }} />
                 <span className="text-sm font-semibold truncate" style={{ color: 'var(--app-text-2)' }}>
@@ -220,8 +272,8 @@ export default function Home() {
                 </span>
               </div>
               <div className="flex flex-col gap-3">
-                {col.items.map((b) => (
-                  <BookmarkCard key={b.id} bookmark={b} onEdit={openEdit} viewMode="grid" />
+                {col.items.map((b, index) => (
+                  <BookmarkCard key={b.id} bookmark={b} onEdit={openEdit} viewMode="grid" index={index} />
                 ))}
               </div>
             </div>
@@ -229,7 +281,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Bookmark form modal ───────────────────── */}
       {showForm && <BookmarkForm onClose={closeForm} editData={editData} />}
     </div>
   );
